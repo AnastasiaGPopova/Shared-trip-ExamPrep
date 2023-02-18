@@ -13,45 +13,46 @@ const {isAuthenticated} = require('./middlewares/authMiddleware.js')
 
 //-------------------------------------------
 
-
+//Home
 router.get('/', homeController.getHomePage)
-// router.get('/calalog', homeController.getCatalogPage)
+router.get('/sharedTrips', homeController.getSharedTripsPage)
+router.get('/profile', homeController.getProfilePage)
 
 
-//Login and Register
+ //Login and Register
 
 router.get('/login', authController.loginPage)
 router.get('/register', authController.registerPage)
-// router.post('/register', authController.postRegisterUser)
-// router.post('/login', authController.postLoginUser)
+router.post('/register', authController.postRegisterUser)
+router.post('/login', authController.postLoginUser)
 
 
-// //house creation
-// router.get('/create', isAuthenticated, houseController.getHouseCreationPage )
-// router.post('/create', isAuthenticated, houseController.postCreatedHouse)
+ //trip creation
+router.get('/create', isAuthenticated, tripController.getTripCreationPage )
+router.post('/create', isAuthenticated, tripController.postCreatedTrip)
 
-//  //Details Page
-// router.get('/:houseId/details', houseController.getDetails)
+//Details Page
+router.get('/:tripId/details', tripController.getDetails)
 
-// // // //rent
-// router.get('/:houseId/rent', isAuthenticated, houseController.rent)
+//join
+router.get('/:tripId/join', isAuthenticated, tripController.join)
 // // router.get('/post/:postId/voteDown', isAuthenticated, postController.voteDown)
 
-// //Edit page
-// router.get('/:houseId/edit', isAuthenticated, houseController.getEditPage)
-// router.post('/:houseId/edit', isAuthenticated, houseController.postEditedHouse)
+//Edit page
+router.get('/:tripId/edit', isAuthenticated, tripController.getEditPage)
+router.post('/:tripId/edit', isAuthenticated, tripController.postEditedTrip)
 
-// // //Delete post
-// router.get('/:houseId/delete', isAuthenticated, houseController.getDeleteHouse)
+//Delete post
+router.get('/:tripId/delete', isAuthenticated, tripController.getDelete)
 
 // // //search
-// router.get('/search', isAuthenticated, houseController.getSearchPage)
-// router.post('/search', isAuthenticated, houseController.getSearchPagewithResults)
+// router.get('/search', isAuthenticated, tripController.getSearchPage)
+// router.post('/search', isAuthenticated, tripController.getSearchPagewithResults)
 
 
-// router.get('/logout', authController.logout)
-// router.get('*', homeController.getErrorPage404)
-// router.get('/404', homeController.getErrorPage404)
+router.get('/logout', isAuthenticated, authController.logout)
+router.get('*', homeController.getErrorPage404)
+router.get('/404', homeController.getErrorPage404)
 
 
 

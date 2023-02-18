@@ -1,25 +1,28 @@
 const mongoose = require('mongoose')
 
 const tripSchema = new mongoose.Schema({
-    start: {
+    startPoint: {
         type: String,
         required: true,
-        minLength: [4, "Too short! Start point should be at least 4 characters !"]
+        minLength: [4, "Too short! Start Point should be at least 4 characters !"]
     }, 
-    end: {
+    endPoint: {
         type: String,
         required: true,
-        //enum: { values:["Apartment", "Villa", "House"], message:'Type field can be only “Apartment”, “Villa” or “House” !'}
-         minLength: [4, "Too short! End point should be at least 4 characters !"]
+        minLength: [4, "Too short! End Point should be at least 4 characters !"]
+    }, 
+    date: {
+        type: String,
+        required: true,
+       // enum: { values:["Apartment", "Villa", "House"], message:'Type field can be only “Apartment”, “Villa” or “House” !'}
+       // minLength: [6, "Too short! Keyword should be at least 6 characters !"]
     },
     time: {
-        type: Number,
+        type: String,
         required: true,
-        //min: 1850,
-        //max: 2021
-        //maxLength: [15, "Too long! Location should be 15 characters !"]
+       // enum: { values:["Apartment", "Villa", "House"], message:'Type field can be only “Apartment”, “Villa” or “House” !'}
+       // minLength: [6, "Too short! Keyword should be at least 6 characters !"]
     },
-
     imageUrl: {
         type: String,
         required: true,
@@ -31,32 +34,30 @@ const tripSchema = new mongoose.Schema({
             message: "Invalid URL!"
         }
     }, 
-    car: {
+    brand: {
         type: String,
         required: true,
-        minLength: [4, "Car brand should at least 4 characters !"],
-        //maxLength: [10, "Date should be 10 characters !"]
+       // enum: { values:["Apartment", "Villa", "House"], message:'Type field can be only “Apartment”, “Villa” or “House” !'}
+       minLength: [4, "Too short! Car Brand should be at least 4 characters !"]
     },
     seats: {
         type: Number,
         required: true,
         min: 0,
         max: 4
-        //minLength: [4, "City should at least 4 characters !"],
-        //maxLength: [10, "Date should be 10 characters !"]
+        //maxLength: [15, "Too long! Location should be 15 characters !"]
     },
     price: {
         type: Number,
         required: true,
         min: 1,
         max: 50
-        //minLength: [4, "City should at least 4 characters !"],
-        //maxLength: [10, "Date should be 10 characters !"]
+        //maxLength: [15, "Too long! Location should be 15 characters !"]
     },
     description: {
         type: String,
         required: true,
-        minLength: [10, "Too short! Description should be at least 10 characters !"]
+        minLength: [10, "Too short! Description should be at least 4 characters !"]
     
     },
     creator: {
@@ -66,8 +67,7 @@ const tripSchema = new mongoose.Schema({
     buddies:[{
         type: mongoose.Types.ObjectId,
         ref: 'User'
-    }]
-    
+    }],
     // createdAt: {
     //     type: Date, default: Date.now
     // },

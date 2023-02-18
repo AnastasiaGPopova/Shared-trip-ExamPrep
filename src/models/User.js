@@ -5,28 +5,30 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        match: /^[a-zA-Z0-9]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+/,
         //minLength: [3, "First name should be at least 3 characters long!"]
-    },
-    gender: {
-        type: String,
-        required: true,
-        enum: { values:["male", "female"], message:'Gender field can be only “male" or female !'}
-        //minLength: [5, "Username should be at least 3 characters long!"]
     },
     password : {
         type: String,
         required: true,
         minLength: [4, 'Password too short!']
     },
+    gender: {
+        type: String,
+        required: true,
+       // enum: { values:["Apartment", "Villa", "House"], message:'Type field can be only “Apartment”, “Villa” or “House” !'}
+       //minLength: [4, "Too short! Car Brand should be at least 4 characters !"]
+    },
     tripHistory:[{
         type: mongoose.Types.ObjectId,
         ref: 'Trip'
-    }]
-    
+    }],
  })
 
  userSchema.pre('save', function(next){
+    if(!this.isModified('password')){
+        return next()
+    }
     bcrypt.hash(this.password, 10)
            .then(hash => {
             this.password = hash

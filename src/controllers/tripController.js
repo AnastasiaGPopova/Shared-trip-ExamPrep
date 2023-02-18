@@ -1,4 +1,4 @@
-const Trip = require('../models/Trip.js')
+const Trip = require('../models/Trip')
 const User = require('../models/User')
 const tripService = require('../services/tripService')
 const tripUtility = require('../utils/tripUtility')
@@ -6,141 +6,127 @@ const parser = require('../utils/parser')
 
 
 
-exports.getHouseCreationPage = (req,res) => {
+exports.getTripCreationPage = (req,res) => {
     res.render('create')
 }
 
-// exports.postCreatedHouse = async (req, res) => {
-//  const {name, type, year, city, imageUrl, description, prices} = req.body
+exports.postCreatedTrip = async (req, res) => {
+ const {startPoint, endPoint, date, time, imageUrl, brand, seats, price, description} = req.body
 
-//     try{
-//         if(!name || !type || !year || !city || !imageUrl || !description || !prices){
-//             throw new Error ("All fields are requiered!")
-//         }
-//         const newHouse = await housingService.createNewHouse({name, type, year, city, imageUrl, description, prices, owner: req.user._id})//encoded body-to, which we receive, will create a new cube
-//         //redirect
-//         res.redirect('/')
+    try{
+        if(!startPoint || !endPoint || !date || !time || !imageUrl || !brand || !seats || !price || !description){
+            throw new Error ("All fields are requiered!")
+        }
+        const newTrip = await tripService.createNew({startPoint, endPoint, date, time, imageUrl, brand, seats, price, description, creator: req.user._id})//encoded body-to, which we receive, will create a new cube
+        //redirect
+        res.redirect('/')
 
-//     } catch(error){
-//         const errors = parser.parseError(error)
-//         res.render('create', {errors})
-//     }
+    } catch(error){
+        const errors = parser.parseError(error)
+        res.render('create', {errors})
+    }
 
-// }
+}
 
-// exports.getDetails = async (req, res) => {
+exports.getDetails = async (req, res) => {
 
-//     let currentHouse = await housingService.getOneHouse(req.params.houseId)//it makes a request to the DB and gives us back all accessories with all details and infos/not only the ID/
-//                                        .populate('rentedHome') 
-//                                        .populate('owner')         
-//                                        .lean()
+    let currentTrip = await tripService.getOne(req.params.tripId)//it makes a request to the DB and gives us back all accessories with all details and infos/not only the ID/
+                                       .populate('buddies') 
+                                       .populate('creator')         
+                                       .lean()
 
-//      if(!currentHouse){
-//     return res.redirect('/404')
-//       }
+     if(!currentTrip){
+    return res.redirect('/404')
+      }
 
-// let isLogged = false
-// let rentedBy = currentHouse.rentedHome.map(x =>x.name)
-
-// let isRented = true
-// let isAvailable = true
-
-      
-  
-// if(rentedBy.length == 0){
-//     isRented = false
-// }
-//   if(pieces == 0){
-//           isAvailable = false
-// }
-
-//       rentedBy = rentedBy.join(', ')
-
-// if(req.user){
-//     isLogged = true
-
-    
-//     const isOwner = houseUtility.isHouseOwner(req.user, currentHouse)
-//     const isRentedbyCurrentUser= await houseUtility.isRentedAlready(req.user._id, req.params.houseId)
-//     console.log(isRentedbyCurrentUser)
-
-//     res.render('details', {currentHouse, isOwner, isRentedbyCurrentUser, isRented, rentedBy, isAvailable, isLogged})
-// } else {
-//     res.render('details', {currentHouse, isRented, rentedBy, isLogged})
-// }
-// }
-
-// exports.rent = async (req,res) =>{
-//     const currentHouse = await housingService.getOneHouse(req.params.houseId)
-//     const isOwner = houseUtility.isHouseOwner(req.user, currentHouse)
-
-//     if(isOwner){
-//         res.redirect('/')
-//     } else {
-//     currentHouse.rentedHome.push(req.user._id)
-//     currentHouse.prices--
-//     await currentHouse.save()
-//     res.redirect(`/${req.params.houseId}/details`)
-//     }
-
-// }
+let isLogged = false
+let areJoined = false
+let joinedUsers = ''
 
 
-// exports.getEditPage = async (req,res) => {
-//     const currentHouse = await housingService.getOneHouse(req.params.houseId).populate('owner').lean()
-//     const isOwner = houseUtility.isHouseOwner(req.user, currentHouse)
-
-//     if(!isOwner){
-//         res.redirect('/')
-//     } else {
-//         res.render('edit', {currentHouse})
-//     }
-// }
+if(currentTrip.buddies){
+    areJoined = true
+    joinedUsers = currentTrip.buddies.map(x =>x.email)
+    console.log(joinedUsers)
+    joinedUsers = joinedUsers.join(", ")
+}
 
 
+let isAvailable = true
 
-// exports.postEditedHouse = async (req,res) => {
-//     const {name, type, year, city, imageUrl, description, prices} = req.body
-//     try{
-//         if(!name || !type || !year || !city || !imageUrl || !description || !prices){
-//             throw new Error ("All fields are requiered!")
-//         }
-//         const updatedHouse = await housingService.update(req.params.houseId,{name, type, year, city, imageUrl, description, prices} )//encoded body-to, which we receive, will create a new cube
+  if(currentTrip.seats == 0){
+          isAvailable = false
+}
 
-//         res.redirect(`/${req.params.houseId}/details`)
+if(req.user){
+    isLogged = true
 
-//     } catch(error){
-//         const errors = parser.parseError(error)
-//         res.render(`edit`, {errors})
-//     }
-// }
+    const isOwner = tripUtility.isTripOwner(req.user, currentTrip)
+    const isAlreadyJoined= await tripUtility.isAlreadyJoined(req.user._id, req.params.tripId)
+    // console.log(isOwner)
+    // console.log(isAlreadyJoined)
 
+    res.render('details', {currentTrip, isLogged, isOwner, isAlreadyJoined, isAvailable, joinedUsers, areJoined})
+} else {
+    res.render('details', {currentTrip, isLogged, joinedUsers, areJoined})
+}
+}
 
-// exports.getDeleteHouse= async (req, res) => {
-//     const house = await housingService.getOneHouse(req.params.houseId).populate('owner').lean()
-//     const isOwner = houseUtility.isHouseOwner(req.user, house)
+exports.join = async (req,res) =>{
+    const currentTrip = await tripService.getOne(req.params.tripId)
+    const isOwner = tripUtility.isTripOwner(req.user, currentTrip)
 
-//     if(!isOwner){
-//         res.redirect('/')
-//     } else {
-//    const test = await housingService.deleteHouse(req.params.houseId)
-//    res.redirect('/')
-//     }
-// }
+    if(isOwner){
+        res.redirect('/')
+    } else {
+    currentTrip.buddies.push(req.user._id)
+    currentTrip.seats--
+    await currentTrip.save()
+    res.redirect(`/${req.params.tripId}/details`)
+    }
 
-// exports.getSearchPage = async (req,res) => {
-
-//     let isSearched = false
-//     res.render('search', {isSearched})
-// }
-
-// exports.getSearchPagewithResults = async (req, res) => {
-//     let isSearched = true
-//     const {searchedItem} = req.body
-
-//     const allMatches = await housingService.getSearchedbyType(searchedItem).lean()
-//     console.log(allMatches)
+}
 
 
-//     res.render('search', {allMatches, isSearched})
-// }
+exports.getEditPage = async (req,res) => {
+    const currentTrip = await tripService.getOne(req.params.tripId).populate('creator').lean()
+    const isOwner = tripUtility.isTripOwner(req.user, currentTrip)
+
+    if(!isOwner){
+        res.redirect('/')
+    } else {
+        res.render('trip-edit', {currentTrip})
+    }
+}
+
+
+
+exports.postEditedTrip = async (req,res) => {
+    const {startPoint, endPoint, date, time, imageUrl, brand, seats, price, description} = req.body
+
+    try{
+        if(!startPoint || !endPoint || !date || !time || !imageUrl || !brand || !seats || !price || !description){
+            throw new Error ("All fields are requiered!")
+        }
+        const updatedTrip = await tripService.update(req.params.tripId,{startPoint, endPoint, date, time, imageUrl, brand, seats, price, description} )//encoded body-to, which we receive, will create a new cube
+
+        res.redirect(`/${req.params.tripId}/details`)
+
+    } catch(error){
+        const errors = parser.parseError(error)
+        res.render(`trip-edit`, {errors})
+    }
+}
+
+
+exports.getDelete= async (req, res) => {
+    const trip = await tripService.getOne(req.params.tripId).populate('creator').lean()
+    const isOwner = tripUtility.isTripOwner(req.user, trip)
+
+    if(!isOwner){
+        res.redirect('/')
+    } else {
+            const test = await tripService.delete(req.params.tripId)
+            res.redirect('/')  
+    }
+}

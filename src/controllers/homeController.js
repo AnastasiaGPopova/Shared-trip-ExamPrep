@@ -1,5 +1,6 @@
-//const Post = require('../models/Post.js')
 const User = require('../models/User')
+const Trip = require('../models/Trip')
+
 const { all } = require('../routes')
 const tripService = require('../services/tripService')
 
@@ -9,18 +10,23 @@ exports.getHomePage = async (req, res) => {
 }
 
 
-// exports.getCatalogPage = async (req, res) => {
-//         const allHouses = await housingService.getAllHouses().lean()
-//         res.render('aprt-for-recent', {allHouses})
-// }
-// exports.getProfilePage = async (req,res) => {
-//     const currentUser = await User.findById(req.user._id).lean()
-//     const bookedHotels = await Hotel.find({bookedByUsers: req.user._id}).lean()
-//     const hotels = bookedHotels.map(h => h.name)
+exports.getSharedTripsPage = async (req, res) => {
+        const allTrips = await tripService.getAll().lean()
+        res.render('shared-trips', {allTrips})
+}
 
-//     res.render('auth/profile', { currentUser, hotels })
+exports.getProfilePage = async (req,res) => {
+    const currentUser = await User.findById(req.user._id).lean()
+    const bookedTrpis = await Trip.find({buddies: req.user._id}).lean()
+    console.log(bookedTrpis)
+    let isMale = false
+    if(currentUser.gender == "male"){
+        isMale = true
+    } 
 
-// }
+    res.render('auth/profile', { isMale, bookedTrpis })
+
+}
 
 // exports.getAboutPage = (req,res) => {
 //     res.render('about')

@@ -1,8 +1,8 @@
-const Trip = require('../models/Trip.js')
-exports.isTripOwner = (user, trip) => {
+const Trip = require('../models/Trip')
+exports.isTripOwner = (user, house) => {
     let isOwner = false
     if(user){
-        if(user._id == trip.creator._id){
+        if(user._id == house.creator._id){
             isOwner = true
         }
     }
