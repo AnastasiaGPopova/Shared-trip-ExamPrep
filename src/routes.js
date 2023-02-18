@@ -36,7 +36,6 @@ router.get('/:tripId/details', tripController.getDetails)
 
 //join
 router.get('/:tripId/join', isAuthenticated, tripController.join)
-// // router.get('/post/:postId/voteDown', isAuthenticated, postController.voteDown)
 
 //Edit page
 router.get('/:tripId/edit', isAuthenticated, tripController.getEditPage)
@@ -44,10 +43,6 @@ router.post('/:tripId/edit', isAuthenticated, tripController.postEditedTrip)
 
 //Delete post
 router.get('/:tripId/delete', isAuthenticated, tripController.getDelete)
-
-// // //search
-// router.get('/search', isAuthenticated, tripController.getSearchPage)
-// router.post('/search', isAuthenticated, tripController.getSearchPagewithResults)
 
 
 router.get('/logout', isAuthenticated, authController.logout)
